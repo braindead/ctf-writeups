@@ -1,0 +1,335 @@
+__INLINE i64 read(unsigned int fd, char  * buf, size_t count) { return syscall(0, (u64)fd, (u64)buf, (u64)count); }
+__INLINE i64 write(unsigned int fd, const char  * buf, size_t count) { return syscall(1, (u64)fd, (u64)buf, (u64)count); }
+__INLINE i64 open(const char  * filename, int flags, umode_t mode) { return syscall(2, (u64)filename, (u64)flags, (u64)mode); }
+__INLINE i64 close(unsigned int fd) { return syscall(3, (u64)fd); }
+__INLINE i64 stat(const char  * filename, struct stat  * statbuf) { return syscall(4, (u64)filename, (u64)statbuf); }
+__INLINE i64 fstat(unsigned int fd, struct stat  * statbuf) { return syscall(5, (u64)fd, (u64)statbuf); }
+__INLINE i64 lstat(const char  * filename, struct stat  * statbuf) { return syscall(6, (u64)filename, (u64)statbuf); }
+__INLINE i64 poll(struct pollfd  * ufds, unsigned int nfds, int timeout_msecs) { return syscall(7, (u64)ufds, (u64)nfds, (u64)timeout_msecs); }
+__INLINE i64 lseek(unsigned int fd, off_t offset, unsigned int whence) { return syscall(8, (u64)fd, (u64)offset, (u64)whence); }
+__INLINE i64 mmap(unsigned long addr, unsigned long len, unsigned long prot, unsigned long flags, unsigned long fd, unsigned long off) { return syscall(9, (u64)addr, (u64)len, (u64)prot, (u64)flags, (u64)fd, (u64)off); }
+__INLINE i64 mprotect(unsigned long start, size_t len, unsigned long prot) { return syscall(10, (u64)start, (u64)len, (u64)prot); }
+__INLINE i64 munmap(unsigned long addr, size_t len) { return syscall(11, (u64)addr, (u64)len); }
+__INLINE i64 brk(unsigned long brk) { return syscall(12, (u64)brk); }
+__INLINE i64 rt_sigaction(int sig, const struct sigaction  * act, struct sigaction  * oact, size_t sigsetsize) { return syscall(13, (u64)sig, (u64)act, (u64)oact, (u64)sigsetsize); }
+__INLINE i64 rt_sigprocmask(int how, sigset_t  * nset, sigset_t  * oset, size_t sigsetsize) { return syscall(14, (u64)how, (u64)nset, (u64)oset, (u64)sigsetsize); }
+__INLINE i64 rt_sigreturn() { return syscall(15); }
+__INLINE i64 ioctl(unsigned int fd, unsigned int cmd, unsigned long arg) { return syscall(16, (u64)fd, (u64)cmd, (u64)arg); }
+__INLINE i64 pread64(unsigned int fd, char  * buf, size_t count, loff_t pos) { return syscall(17, (u64)fd, (u64)buf, (u64)count, (u64)pos); }
+__INLINE i64 pwrite64(unsigned int fd, const char  * buf, size_t count, loff_t pos) { return syscall(18, (u64)fd, (u64)buf, (u64)count, (u64)pos); }
+__INLINE i64 readv(unsigned long fd, const struct iovec  * vec, unsigned long vlen) { return syscall(19, (u64)fd, (u64)vec, (u64)vlen); }
+__INLINE i64 writev(unsigned long fd, const struct iovec  * vec, unsigned long vlen) { return syscall(20, (u64)fd, (u64)vec, (u64)vlen); }
+__INLINE i64 access(const char  * filename, int mode) { return syscall(21, (u64)filename, (u64)mode); }
+__INLINE i64 pipe(int  * fildes) { return syscall(22, (u64)fildes); }
+__INLINE i64 select(int n, unsigned long  * inp, unsigned long  * outp, unsigned long  * exp, struct old_timeval32  * tvp) { return syscall(23, (u64)n, (u64)inp, (u64)outp, (u64)exp, (u64)tvp); }
+__INLINE i64 sched_yield() { return syscall(24); }
+__INLINE i64 mremap(unsigned long addr, unsigned long old_len, unsigned long new_len, unsigned long flags, unsigned long new_addr) { return syscall(25, (u64)addr, (u64)old_len, (u64)new_len, (u64)flags, (u64)new_addr); }
+__INLINE i64 msync(unsigned long start, size_t len, int flags) { return syscall(26, (u64)start, (u64)len, (u64)flags); }
+__INLINE i64 mincore(unsigned long start, size_t len, unsigned char  * vec) { return syscall(27, (u64)start, (u64)len, (u64)vec); }
+__INLINE i64 madvise(unsigned long start, size_t len_in, int behavior) { return syscall(28, (u64)start, (u64)len_in, (u64)behavior); }
+__INLINE i64 shmget(key_t key, size_t size, int shmflg) { return syscall(29, (u64)key, (u64)size, (u64)shmflg); }
+__INLINE i64 shmat(int shmid, uintptr_t shmaddr, int shmflg) { return syscall(30, (u64)shmid, (u64)shmaddr, (u64)shmflg); }
+__INLINE i64 shmctl(int shmid, int cmd, void  * uptr) { return syscall(31, (u64)shmid, (u64)cmd, (u64)uptr); }
+__INLINE i64 dup(unsigned int fildes) { return syscall(32, (u64)fildes); }
+__INLINE i64 dup2(unsigned int oldfd, unsigned int newfd) { return syscall(33, (u64)oldfd, (u64)newfd); }
+__INLINE i64 pause() { return syscall(34); }
+__INLINE i64 nanosleep(struct old_timespec32  * rqtp, struct old_timespec32  * rmtp) { return syscall(35, (u64)rqtp, (u64)rmtp); }
+__INLINE i64 getitimer(int which, struct timerval  * it) { return syscall(36, (u64)which, (u64)it); }
+__INLINE i64 alarm(unsigned int seconds) { return syscall(37, (u64)seconds); }
+__INLINE i64 setitimer(int which, struct timerval  * in, struct timerval  * out) { return syscall(38, (u64)which, (u64)in, (u64)out); }
+__INLINE i64 getpid() { return syscall(39); }
+__INLINE i64 sendfile(int out_fd, int in_fd, off_t  * offset, size_t count) { return syscall(40, (u64)out_fd, (u64)in_fd, (u64)offset, (u64)count); }
+__INLINE i64 socket(int family, int type, int protocol) { return syscall(41, (u64)family, (u64)type, (u64)protocol); }
+__INLINE i64 connect(int fd, struct sockaddr  * uservaddr, int addrlen) { return syscall(42, (u64)fd, (u64)uservaddr, (u64)addrlen); }
+__INLINE i64 accept(int fd, struct sockaddr  * upeer_sockaddr, int  * upeer_addrlen) { return syscall(43, (u64)fd, (u64)upeer_sockaddr, (u64)upeer_addrlen); }
+__INLINE i64 sendto(int fd, void  * buff, size_t len, unsigned int flags, struct sockaddr  * addr, int addr_len) { return syscall(44, (u64)fd, (u64)buff, (u64)len, (u64)flags, (u64)addr, (u64)addr_len); }
+__INLINE i64 recvfrom(int fd, void  * ubuf, size_t size, unsigned int flags, struct sockaddr  * addr, int  * addr_len) { return syscall(45, (u64)fd, (u64)ubuf, (u64)size, (u64)flags, (u64)addr, (u64)addr_len); }
+__INLINE i64 sendmsg(int fd, struct user_msghdr  * msg, unsigned int flags) { return syscall(46, (u64)fd, (u64)msg, (u64)flags); }
+__INLINE i64 recvmsg(int fd, struct user_msghdr  * msg, unsigned int flags) { return syscall(47, (u64)fd, (u64)msg, (u64)flags); }
+__INLINE i64 shutdown(int fd, int how) { return syscall(48, (u64)fd, (u64)how); }
+__INLINE i64 bind(int fd, struct sockaddr  * umyaddr, int addrlen) { return syscall(49, (u64)fd, (u64)umyaddr, (u64)addrlen); }
+__INLINE i64 listen(int fd, int backlog) { return syscall(50, (u64)fd, (u64)backlog); }
+__INLINE i64 getsockname(int fd, struct sockaddr  * usockaddr, int  * usockaddr_len) { return syscall(51, (u64)fd, (u64)usockaddr, (u64)usockaddr_len); }
+__INLINE i64 getpeername(int fd, struct sockaddr  * usockaddr, int  * usockaddr_len) { return syscall(52, (u64)fd, (u64)usockaddr, (u64)usockaddr_len); }
+__INLINE i64 socketpair(int family, int type, int protocol, int  * usockvec) { return syscall(53, (u64)family, (u64)type, (u64)protocol, (u64)usockvec); }
+__INLINE i64 setsockopt(int fd, int level, int optname, char  * optval, int optlen) { return syscall(54, (u64)fd, (u64)level, (u64)optname, (u64)optval, (u64)optlen); }
+__INLINE i64 getsockopt(int fd, int level, int optname, char  * optval, int  * optlen) { return syscall(55, (u64)fd, (u64)level, (u64)optname, (u64)optval, (u64)optlen); }
+__INLINE i64 clone(unsigned long clone_flags, unsigned long newsp, int  * parent_tidptr, int  * child_tidptr, unsigned long tls) { return syscall(56, (u64)clone_flags, (u64)newsp, (u64)parent_tidptr, (u64)child_tidptr, (u64)tls); }
+__INLINE i64 fork() { return syscall(57); }
+__INLINE i64 vfork() { return syscall(58); }
+__INLINE i64 execve(const char  * filename, const uintptr_t  * argv, const uintptr_t  * envp) { return syscall(59, (u64)filename, (u64)argv, (u64)envp); }
+__INLINE i64 exit(int error_code) { return syscall(60, (u64)error_code); }
+__INLINE i64 wait4(pid_t pid, unsigned int  * stat_addr, int options, struct rusage  * ru) { return syscall(61, (u64)pid, (u64)stat_addr, (u64)options, (u64)ru); }
+__INLINE i64 kill(pid_t pid, int sig) { return syscall(62, (u64)pid, (u64)sig); }
+__INLINE i64 uname(struct old_utsname  * name) { return syscall(63, (u64)name); }
+__INLINE i64 semget(key_t key, int nsems, int semflg) { return syscall(64, (u64)key, (u64)nsems, (u64)semflg); }
+__INLINE i64 semop(int semid, struct sembuf  * tsops, unsigned nsops) { return syscall(65, (u64)semid, (u64)tsops, (u64)nsops); }
+__INLINE i64 semctl(int semid, int semnum, int cmd, int arg) { return syscall(66, (u64)semid, (u64)semnum, (u64)cmd, (u64)arg); }
+__INLINE i64 shmdt(char  * shmaddr) { return syscall(67, (u64)shmaddr); }
+__INLINE i64 msgget(key_t key, int msgflg) { return syscall(68, (u64)key, (u64)msgflg); }
+__INLINE i64 msgsnd(int msqid, uintptr_t msgp, ssize_t msgsz, int msgflg) { return syscall(69, (u64)msqid, (u64)msgp, (u64)msgsz, (u64)msgflg); }
+__INLINE i64 msgrcv(int msqid, uintptr_t msgp, ssize_t msgsz, long msgtyp, int msgflg) { return syscall(70, (u64)msqid, (u64)msgp, (u64)msgsz, (u64)msgtyp, (u64)msgflg); }
+__INLINE i64 msgctl(int msqid, int cmd, void  * uptr) { return syscall(71, (u64)msqid, (u64)cmd, (u64)uptr); }
+__INLINE i64 fcntl(unsigned int fd, unsigned int cmd, unsigned long arg) { return syscall(72, (u64)fd, (u64)cmd, (u64)arg); }
+__INLINE i64 flock(unsigned int fd, unsigned int cmd) { return syscall(73, (u64)fd, (u64)cmd); }
+__INLINE i64 fsync(unsigned int fd) { return syscall(74, (u64)fd); }
+__INLINE i64 fdatasync(unsigned int fd) { return syscall(75, (u64)fd); }
+__INLINE i64 truncate(const char  * path, off_t length) { return syscall(76, (u64)path, (u64)length); }
+__INLINE i64 ftruncate(unsigned int fd, unsigned long length) { return syscall(77, (u64)fd, (u64)length); }
+__INLINE i64 getdents(unsigned int fd, struct linux_dirent  * dirent, unsigned int count) { return syscall(78, (u64)fd, (u64)dirent, (u64)count); }
+__INLINE i64 getcwd(char  * buf, unsigned long size) { return syscall(79, (u64)buf, (u64)size); }
+__INLINE i64 chdir(const char  * filename) { return syscall(80, (u64)filename); }
+__INLINE i64 fchdir(unsigned int fd) { return syscall(81, (u64)fd); }
+__INLINE i64 rename(const char  * oldname, const char  * newname) { return syscall(82, (u64)oldname, (u64)newname); }
+__INLINE i64 mkdir(const char  * pathname, umode_t mode) { return syscall(83, (u64)pathname, (u64)mode); }
+__INLINE i64 rmdir(const char  * pathname) { return syscall(84, (u64)pathname); }
+__INLINE i64 creat(const char  * pathname, umode_t mode) { return syscall(85, (u64)pathname, (u64)mode); }
+__INLINE i64 link(const char  * oldname, const char  * newname) { return syscall(86, (u64)oldname, (u64)newname); }
+__INLINE i64 unlink(const char  * pathname) { return syscall(87, (u64)pathname); }
+__INLINE i64 symlink(const char  * oldname, const char  * newname) { return syscall(88, (u64)oldname, (u64)newname); }
+__INLINE i64 readlink(const char  * path, char  * buf, int bufsiz) { return syscall(89, (u64)path, (u64)buf, (u64)bufsiz); }
+__INLINE i64 chmod(const char  * filename, umode_t mode) { return syscall(90, (u64)filename, (u64)mode); }
+__INLINE i64 fchmod(unsigned int fd, umode_t mode) { return syscall(91, (u64)fd, (u64)mode); }
+__INLINE i64 chown(const char  * filename, uid_t user, gid_t group) { return syscall(92, (u64)filename, (u64)user, (u64)group); }
+__INLINE i64 fchown(unsigned int fd, uid_t user, gid_t group) { return syscall(93, (u64)fd, (u64)user, (u64)group); }
+__INLINE i64 lchown(const char  * filename, uid_t user, gid_t group) { return syscall(94, (u64)filename, (u64)user, (u64)group); }
+__INLINE i64 umask(int mask) { return syscall(95, (u64)mask); }
+__INLINE i64 gettimeofday(struct old_timeval32  * tv, struct timezone  * tz) { return syscall(96, (u64)tv, (u64)tz); }
+__INLINE i64 getrlimit(unsigned int resource, struct rlimit  * rlim) { return syscall(97, (u64)resource, (u64)rlim); }
+__INLINE i64 getrusage(int who, struct rusage  * ru) { return syscall(98, (u64)who, (u64)ru); }
+__INLINE i64 sysinfo(struct sysinfo  * info) { return syscall(99, (u64)info); }
+__INLINE i64 times(struct tms  * tbuf) { return syscall(100, (u64)tbuf); }
+__INLINE i64 ptrace(long request, long pid, long addr, long data) { return syscall(101, (u64)request, (u64)pid, (u64)addr, (u64)data); }
+__INLINE i64 getuid() { return syscall(102); }
+__INLINE i64 syslog(int type, char  * buf, int len) { return syscall(103, (u64)type, (u64)buf, (u64)len); }
+__INLINE i64 getgid() { return syscall(104); }
+__INLINE i64 setuid(uid_t uid) { return syscall(105, (u64)uid); }
+__INLINE i64 setgid(gid_t gid) { return syscall(106, (u64)gid); }
+__INLINE i64 geteuid() { return syscall(107); }
+__INLINE i64 getegid() { return syscall(108); }
+__INLINE i64 setpgid(pid_t pid, pid_t pgid) { return syscall(109, (u64)pid, (u64)pgid); }
+__INLINE i64 getppid() { return syscall(110); }
+__INLINE i64 getpgrp() { return syscall(111); }
+__INLINE i64 setsid() { return syscall(112); }
+__INLINE i64 setreuid(uid_t ruid, uid_t euid) { return syscall(113, (u64)ruid, (u64)euid); }
+__INLINE i64 setregid(gid_t rgid, gid_t egid) { return syscall(114, (u64)rgid, (u64)egid); }
+__INLINE i64 getgroups(int gidsetsize, gid_t  * grouplist) { return syscall(115, (u64)gidsetsize, (u64)grouplist); }
+__INLINE i64 setgroups(int gidsetsize, gid_t  * grouplist) { return syscall(116, (u64)gidsetsize, (u64)grouplist); }
+__INLINE i64 setresuid(uid_t ruid, uid_t euid, uid_t suid) { return syscall(117, (u64)ruid, (u64)euid, (u64)suid); }
+__INLINE i64 getresuid(uid_t  * ruidp, uid_t  * euidp, uid_t  * suidp) { return syscall(118, (u64)ruidp, (u64)euidp, (u64)suidp); }
+__INLINE i64 setresgid(gid_t rgid, gid_t egid, gid_t sgid) { return syscall(119, (u64)rgid, (u64)egid, (u64)sgid); }
+__INLINE i64 getresgid(gid_t  * rgidp, gid_t  * egidp, gid_t  * sgidp) { return syscall(120, (u64)rgidp, (u64)egidp, (u64)sgidp); }
+__INLINE i64 getpgid(pid_t pid) { return syscall(121, (u64)pid); }
+__INLINE i64 setfsuid(uid_t uid) { return syscall(122, (u64)uid); }
+__INLINE i64 setfsgid(gid_t gid) { return syscall(123, (u64)gid); }
+__INLINE i64 getsid(pid_t pid) { return syscall(124, (u64)pid); }
+__INLINE i64 capget(cap_user_header_t header, cap_user_data_t dataptr) { return syscall(125, (u64)header, (u64)dataptr); }
+__INLINE i64 capset(cap_user_header_t header, const cap_user_data_t data) { return syscall(126, (u64)header, (u64)data); }
+__INLINE i64 rt_sigpending(sigset_t  * uset, size_t sigsetsize) { return syscall(127, (u64)uset, (u64)sigsetsize); }
+__INLINE i64 rt_sigtimedwait(sigset_t  * uthese, struct siginfo  * uinfo, struct old_timespec32  * uts, size_t sigsetsize) { return syscall(128, (u64)uthese, (u64)uinfo, (u64)uts, (u64)sigsetsize); }
+__INLINE i64 rt_sigqueueinfo(pid_t pid, int sig, struct siginfo  * uinfo) { return syscall(129, (u64)pid, (u64)sig, (u64)uinfo); }
+__INLINE i64 rt_sigsuspend(sigset_t  * unewset, size_t sigsetsize) { return syscall(130, (u64)unewset, (u64)sigsetsize); }
+__INLINE i64 sigaltstack(const stack_t  * uss_ptr, stack_t  * uoss_ptr) { return syscall(131, (u64)uss_ptr, (u64)uoss_ptr); }
+__INLINE i64 utime(const char  * filename, struct old_utimbuf32  * t) { return syscall(132, (u64)filename, (u64)t); }
+__INLINE i64 mknod(const char  * filename, umode_t mode, unsigned dev) { return syscall(133, (u64)filename, (u64)mode, (u64)dev); }
+__INLINE i64 uselib(const char  * library) { return syscall(134, (u64)library); }
+__INLINE i64 personality(unsigned int personality) { return syscall(135, (u64)personality); }
+__INLINE i64 ustat(unsigned dev, struct ustat  * u) { return syscall(136, (u64)dev, (u64)u); }
+__INLINE i64 statfs(const char  * pathname, struct statfs  * buf) { return syscall(137, (u64)pathname, (u64)buf); }
+__INLINE i64 fstatfs(unsigned int fd, struct statfs  * buf) { return syscall(138, (u64)fd, (u64)buf); }
+__INLINE i64 sysfs(int option, unsigned long arg1, unsigned long arg2) { return syscall(139, (u64)option, (u64)arg1, (u64)arg2); }
+__INLINE i64 getpriority(int which, int who) { return syscall(140, (u64)which, (u64)who); }
+__INLINE i64 setpriority(int which, int who, int niceval) { return syscall(141, (u64)which, (u64)who, (u64)niceval); }
+__INLINE i64 sched_setparam(pid_t pid, struct sched_param  * param) { return syscall(142, (u64)pid, (u64)param); }
+__INLINE i64 sched_getparam(pid_t pid, struct sched_param  * param) { return syscall(143, (u64)pid, (u64)param); }
+__INLINE i64 sched_setscheduler(pid_t pid, int policy, struct sched_param  * param) { return syscall(144, (u64)pid, (u64)policy, (u64)param); }
+__INLINE i64 sched_getscheduler(pid_t pid) { return syscall(145, (u64)pid); }
+__INLINE i64 sched_get_priority_max(int policy) { return syscall(146, (u64)policy); }
+__INLINE i64 sched_get_priority_min(int policy) { return syscall(147, (u64)policy); }
+__INLINE i64 sched_rr_get_interval(pid_t pid, struct old_timespec32  * interval) { return syscall(148, (u64)pid, (u64)interval); }
+__INLINE i64 mlock(unsigned long start, size_t len) { return syscall(149, (u64)start, (u64)len); }
+__INLINE i64 munlock(unsigned long start, size_t len) { return syscall(150, (u64)start, (u64)len); }
+__INLINE i64 mlockall(int flags) { return syscall(151, (u64)flags); }
+__INLINE i64 munlockall() { return syscall(152); }
+__INLINE i64 vhangup() { return syscall(153); }
+__INLINE i64 modify_ldt(int func, void  * ptr, unsigned long bytecount) { return syscall(154, (u64)func, (u64)ptr, (u64)bytecount); }
+__INLINE i64 pivot_root(const char  * new_root, const char  * put_old) { return syscall(155, (u64)new_root, (u64)put_old); }
+// couldn't find arguments for _sysctl 156
+__INLINE i64 prctl(int option, unsigned long arg2, unsigned long arg3, unsigned long arg4, unsigned long arg5) { return syscall(157, (u64)option, (u64)arg2, (u64)arg3, (u64)arg4, (u64)arg5); }
+__INLINE i64 arch_prctl(int option, unsigned long arg2) { return syscall(158, (u64)option, (u64)arg2); }
+__INLINE i64 adjtimex(struct timex  * utp) { return syscall(159, (u64)utp); }
+__INLINE i64 setrlimit(unsigned int resource, struct rlimit  * rlim) { return syscall(160, (u64)resource, (u64)rlim); }
+__INLINE i64 chroot(const char  * filename) { return syscall(161, (u64)filename); }
+__INLINE i64 sync() { return syscall(162); }
+__INLINE i64 acct(const char  * name) { return syscall(163, (u64)name); }
+__INLINE i64 settimeofday(struct old_timeval32  * tv, struct timezone  * tz) { return syscall(164, (u64)tv, (u64)tz); }
+__INLINE i64 mount(char  * dev_name, char  * dir_name, char  * type, unsigned long flags, void  * data) { return syscall(165, (u64)dev_name, (u64)dir_name, (u64)type, (u64)flags, (u64)data); }
+// couldn't find arguments for umount2 166
+__INLINE i64 swapon(const char  * specialfile, int swap_flags) { return syscall(167, (u64)specialfile, (u64)swap_flags); }
+__INLINE i64 swapoff(const char  * specialfile) { return syscall(168, (u64)specialfile); }
+__INLINE i64 reboot(int magic1, int magic2, unsigned int cmd, void  * arg) { return syscall(169, (u64)magic1, (u64)magic2, (u64)cmd, (u64)arg); }
+__INLINE i64 sethostname(char  * name, int len) { return syscall(170, (u64)name, (u64)len); }
+__INLINE i64 setdomainname(char  * name, int len) { return syscall(171, (u64)name, (u64)len); }
+__INLINE i64 iopl(unsigned int level) { return syscall(172, (u64)level); }
+__INLINE i64 ioperm(unsigned long from, unsigned long num, int turn_on) { return syscall(173, (u64)from, (u64)num, (u64)turn_on); }
+// couldn't find arguments for create_module 174
+__INLINE i64 init_module(void  * umod, unsigned long len, const char  * uargs) { return syscall(175, (u64)umod, (u64)len, (u64)uargs); }
+__INLINE i64 delete_module(const char  * name_user, unsigned int flags) { return syscall(176, (u64)name_user, (u64)flags); }
+// couldn't find arguments for get_kernel_syms 177
+// couldn't find arguments for query_module 178
+__INLINE i64 quotactl(unsigned int cmd, const char  * special, qid_t id, void  * addr) { return syscall(179, (u64)cmd, (u64)special, (u64)id, (u64)addr); }
+// couldn't find arguments for nfsservctl 180
+// couldn't find arguments for getpmsg 181
+// couldn't find arguments for putpmsg 182
+// couldn't find arguments for afs_syscall 183
+// couldn't find arguments for tuxcall 184
+// couldn't find arguments for security 185
+__INLINE i64 gettid() { return syscall(186); }
+__INLINE i64 readahead(int fd, loff_t offset, size_t count) { return syscall(187, (u64)fd, (u64)offset, (u64)count); }
+__INLINE i64 setxattr(const char  * pathname, const char  * name, const void  * value, size_t size, int flags) { return syscall(188, (u64)pathname, (u64)name, (u64)value, (u64)size, (u64)flags); }
+__INLINE i64 lsetxattr(const char  * pathname, const char  * name, const void  * value, size_t size, int flags) { return syscall(189, (u64)pathname, (u64)name, (u64)value, (u64)size, (u64)flags); }
+__INLINE i64 fsetxattr(int fd, const char  * name, const void  * value, size_t size, int flags) { return syscall(190, (u64)fd, (u64)name, (u64)value, (u64)size, (u64)flags); }
+__INLINE i64 getxattr(const char  * pathname, const char  * name, void  * value, size_t size) { return syscall(191, (u64)pathname, (u64)name, (u64)value, (u64)size); }
+__INLINE i64 lgetxattr(const char  * pathname, const char  * name, void  * value, size_t size) { return syscall(192, (u64)pathname, (u64)name, (u64)value, (u64)size); }
+__INLINE i64 fgetxattr(int fd, const char  * name, void  * value, size_t size) { return syscall(193, (u64)fd, (u64)name, (u64)value, (u64)size); }
+__INLINE i64 listxattr(const char  * pathname, char  * list, size_t size) { return syscall(194, (u64)pathname, (u64)list, (u64)size); }
+__INLINE i64 llistxattr(const char  * pathname, char  * list, size_t size) { return syscall(195, (u64)pathname, (u64)list, (u64)size); }
+__INLINE i64 flistxattr(int fd, char  * list, size_t size) { return syscall(196, (u64)fd, (u64)list, (u64)size); }
+__INLINE i64 removexattr(const char  * pathname, const char  * name) { return syscall(197, (u64)pathname, (u64)name); }
+__INLINE i64 lremovexattr(const char  * pathname, const char  * name) { return syscall(198, (u64)pathname, (u64)name); }
+__INLINE i64 fremovexattr(int fd, const char  * name) { return syscall(199, (u64)fd, (u64)name); }
+__INLINE i64 tkill(pid_t pid, int sig) { return syscall(200, (u64)pid, (u64)sig); }
+__INLINE i64 time(old_time32_t  * tloc) { return syscall(201, (u64)tloc); }
+__INLINE i64 futex(u32  * uaddr, int op, u32 val, struct old_timespec32  * utime, u32  * uaddr2, u32 val3) { return syscall(202, (u64)uaddr, (u64)op, (u64)val, (u64)utime, (u64)uaddr2, (u64)val3); }
+__INLINE i64 sched_setaffinity(pid_t pid, unsigned int len, unsigned long  * user_mask_ptr) { return syscall(203, (u64)pid, (u64)len, (u64)user_mask_ptr); }
+__INLINE i64 sched_getaffinity(pid_t pid, unsigned int len, unsigned long  * user_mask_ptr) { return syscall(204, (u64)pid, (u64)len, (u64)user_mask_ptr); }
+__INLINE i64 set_thread_area(struct user_desc  * user_desc) { return syscall(205, (u64)user_desc); }
+__INLINE i64 io_setup(unsigned nr_events, u32  * ctx32p) { return syscall(206, (u64)nr_events, (u64)ctx32p); }
+__INLINE i64 io_destroy(aio_context_t ctx) { return syscall(207, (u64)ctx); }
+__INLINE i64 io_getevents(aio_context_t ctx_id, long min_nr, long nr, struct io_event  * events, struct old_timespec32  * timeout) { return syscall(208, (u64)ctx_id, (u64)min_nr, (u64)nr, (u64)events, (u64)timeout); }
+__INLINE i64 io_submit(aio_context_t ctx_id, int nr, uintptr_t  * iocbpp) { return syscall(209, (u64)ctx_id, (u64)nr, (u64)iocbpp); }
+__INLINE i64 io_cancel(aio_context_t ctx_id, struct iocb  * iocb, struct io_event  * result) { return syscall(210, (u64)ctx_id, (u64)iocb, (u64)result); }
+__INLINE i64 get_thread_area(struct user_desc  * user_desc) { return syscall(211, (u64)user_desc); }
+__INLINE i64 lookup_dcookie(u32 w0, u32 w1, char  * buf, size_t len) { return syscall(212, (u64)w0, (u64)w1, (u64)buf, (u64)len); }
+__INLINE i64 epoll_create(int size) { return syscall(213, (u64)size); }
+// couldn't find arguments for epoll_ctl_old 214
+// couldn't find arguments for epoll_wait_old 215
+__INLINE i64 remap_file_pages(unsigned long start, unsigned long size, unsigned long prot, unsigned long pgoff, unsigned long flags) { return syscall(216, (u64)start, (u64)size, (u64)prot, (u64)pgoff, (u64)flags); }
+__INLINE i64 getdents64(unsigned int fd, struct linux_dirent64  * dirent, unsigned int count) { return syscall(217, (u64)fd, (u64)dirent, (u64)count); }
+__INLINE i64 set_tid_address(int  * tidptr) { return syscall(218, (u64)tidptr); }
+__INLINE i64 restart_syscall() { return syscall(219); }
+__INLINE i64 semtimedop(int semid, struct sembuf  * tsems, unsigned int nsops, const struct old_timespec32  * timeout) { return syscall(220, (u64)semid, (u64)tsems, (u64)nsops, (u64)timeout); }
+__INLINE i64 fadvise64(int fd, loff_t offset, size_t len, int advice) { return syscall(221, (u64)fd, (u64)offset, (u64)len, (u64)advice); }
+__INLINE i64 timer_create(clockid_t which_clock, struct sigevent  * timer_event_spec, timer_t  * created_timer_id) { return syscall(222, (u64)which_clock, (u64)timer_event_spec, (u64)created_timer_id); }
+__INLINE i64 timer_settime(timer_t timer_id, int flags, struct old_itimerspec32  * _new, struct old_itimerspec32  * old) { return syscall(223, (u64)timer_id, (u64)flags, (u64)_new, (u64)old); }
+__INLINE i64 timer_gettime(timer_t timer_id, struct old_itimerspec32  * setting) { return syscall(224, (u64)timer_id, (u64)setting); }
+__INLINE i64 timer_getoverrun(timer_t timer_id) { return syscall(225, (u64)timer_id); }
+__INLINE i64 timer_delete(timer_t timer_id) { return syscall(226, (u64)timer_id); }
+__INLINE i64 clock_settime(clockid_t which_clock, struct old_timespec32  * tp) { return syscall(227, (u64)which_clock, (u64)tp); }
+__INLINE i64 clock_gettime(clockid_t which_clock, struct old_timespec32  * tp) { return syscall(228, (u64)which_clock, (u64)tp); }
+__INLINE i64 clock_getres(clockid_t which_clock, struct old_timespec32  * tp) { return syscall(229, (u64)which_clock, (u64)tp); }
+__INLINE i64 clock_nanosleep(clockid_t which_clock, int flags, struct old_timespec32  * rqtp, struct old_timespec32  * rmtp) { return syscall(230, (u64)which_clock, (u64)flags, (u64)rqtp, (u64)rmtp); }
+__INLINE i64 exit_group(int error_code) { return syscall(231, (u64)error_code); }
+__INLINE i64 epoll_wait(int epfd, struct epoll_event  * events, int maxevents, int timeout) { return syscall(232, (u64)epfd, (u64)events, (u64)maxevents, (u64)timeout); }
+__INLINE i64 epoll_ctl(int epfd, int op, int fd, struct epoll_event  * event) { return syscall(233, (u64)epfd, (u64)op, (u64)fd, (u64)event); }
+__INLINE i64 tgkill(pid_t tgid, pid_t pid, int sig) { return syscall(234, (u64)tgid, (u64)pid, (u64)sig); }
+__INLINE i64 utimes(const char  * filename, struct old_timeval32  * t) { return syscall(235, (u64)filename, (u64)t); }
+// couldn't find arguments for vserver 236
+__INLINE i64 mbind(unsigned long start, unsigned long len, unsigned long mode, unsigned long  * nmask, unsigned long maxnode, unsigned long flags) { return syscall(237, (u64)start, (u64)len, (u64)mode, (u64)nmask, (u64)maxnode, (u64)flags); }
+__INLINE i64 set_mempolicy(int mode, unsigned long  * nmask, unsigned long maxnode) { return syscall(238, (u64)mode, (u64)nmask, (u64)maxnode); }
+__INLINE i64 get_mempolicy(int  * policy, unsigned long  * nmask, unsigned long maxnode, unsigned long addr, unsigned long flags) { return syscall(239, (u64)policy, (u64)nmask, (u64)maxnode, (u64)addr, (u64)flags); }
+__INLINE i64 mq_open(const char  * u_name, int oflag, mode_t mode, struct mq_attr  * u_attr) { return syscall(240, (u64)u_name, (u64)oflag, (u64)mode, (u64)u_attr); }
+__INLINE i64 mq_unlink(const char  * u_name) { return syscall(241, (u64)u_name); }
+__INLINE i64 mq_timedsend(mqd_t mqdes, const char  * u_msg_ptr, size_t msg_len, unsigned int msg_prio, const struct old_timespec32  * u_abs_timeout) { return syscall(242, (u64)mqdes, (u64)u_msg_ptr, (u64)msg_len, (u64)msg_prio, (u64)u_abs_timeout); }
+__INLINE i64 mq_timedreceive(mqd_t mqdes, char  * u_msg_ptr, size_t msg_len, unsigned int  * u_msg_prio, const struct old_timespec32  * u_abs_timeout) { return syscall(243, (u64)mqdes, (u64)u_msg_ptr, (u64)msg_len, (u64)u_msg_prio, (u64)u_abs_timeout); }
+__INLINE i64 mq_notify(mqd_t mqdes, const struct sigevent  * u_notification) { return syscall(244, (u64)mqdes, (u64)u_notification); }
+__INLINE i64 mq_getsetattr(mqd_t mqdes, const struct mq_attr  * u_mqstat, struct mq_attr  * u_omqstat) { return syscall(245, (u64)mqdes, (u64)u_mqstat, (u64)u_omqstat); }
+__INLINE i64 kexec_load(unsigned long entry, unsigned long nr_segments, struct kexec_segment  * segments, unsigned long flags) { return syscall(246, (u64)entry, (u64)nr_segments, (u64)segments, (u64)flags); }
+__INLINE i64 waitid(int which, pid_t pid, struct siginfo  * infop, int options, struct rusage  * uru) { return syscall(247, (u64)which, (u64)pid, (u64)infop, (u64)options, (u64)uru); }
+__INLINE i64 add_key(const char  * _type, const char  * _description, const void  * _payload, size_t plen, key_serial_t ringid) { return syscall(248, (u64)_type, (u64)_description, (u64)_payload, (u64)plen, (u64)ringid); }
+__INLINE i64 request_key(const char  * _type, const char  * _description, const char  * _callout_info, key_serial_t destringid) { return syscall(249, (u64)_type, (u64)_description, (u64)_callout_info, (u64)destringid); }
+__INLINE i64 keyctl(int option, unsigned long arg2, unsigned long arg3, unsigned long arg4, unsigned long arg5) { return syscall(250, (u64)option, (u64)arg2, (u64)arg3, (u64)arg4, (u64)arg5); }
+__INLINE i64 ioprio_set(int which, int who, int ioprio) { return syscall(251, (u64)which, (u64)who, (u64)ioprio); }
+__INLINE i64 ioprio_get(int which, int who) { return syscall(252, (u64)which, (u64)who); }
+__INLINE i64 inotify_init() { return syscall(253); }
+__INLINE i64 inotify_add_watch(int fd, const char  * pathname, u32 mask) { return syscall(254, (u64)fd, (u64)pathname, (u64)mask); }
+__INLINE i64 inotify_rm_watch(int fd, __s32 wd) { return syscall(255, (u64)fd, (u64)wd); }
+__INLINE i64 migrate_pages(pid_t pid, unsigned long maxnode, const unsigned long  * old_nodes, const unsigned long  * new_nodes) { return syscall(256, (u64)pid, (u64)maxnode, (u64)old_nodes, (u64)new_nodes); }
+__INLINE i64 openat(int dfd, const char  * filename, int flags, umode_t mode) { return syscall(257, (u64)dfd, (u64)filename, (u64)flags, (u64)mode); }
+__INLINE i64 mkdirat(int dfd, const char  * pathname, umode_t mode) { return syscall(258, (u64)dfd, (u64)pathname, (u64)mode); }
+__INLINE i64 mknodat(int dfd, const char  * filename, umode_t mode, unsigned int dev) { return syscall(259, (u64)dfd, (u64)filename, (u64)mode, (u64)dev); }
+__INLINE i64 fchownat(int dfd, const char  * filename, uid_t user, gid_t group, int flag) { return syscall(260, (u64)dfd, (u64)filename, (u64)user, (u64)group, (u64)flag); }
+__INLINE i64 futimesat(unsigned int dfd, const char  * filename, struct old_timeval32  * t) { return syscall(261, (u64)dfd, (u64)filename, (u64)t); }
+__INLINE i64 newfstatat(unsigned int dfd, const char  * filename, struct stat  * statbuf, int flag) { return syscall(262, (u64)dfd, (u64)filename, (u64)statbuf, (u64)flag); }
+__INLINE i64 unlinkat(int dfd, const char  * pathname, int flag) { return syscall(263, (u64)dfd, (u64)pathname, (u64)flag); }
+__INLINE i64 renameat(int olddfd, const char  * oldname, int newdfd, const char  * newname) { return syscall(264, (u64)olddfd, (u64)oldname, (u64)newdfd, (u64)newname); }
+__INLINE i64 linkat(int olddfd, const char  * oldname, int newdfd, const char  * newname, int flags) { return syscall(265, (u64)olddfd, (u64)oldname, (u64)newdfd, (u64)newname, (u64)flags); }
+__INLINE i64 symlinkat(const char  * oldname, int newdfd, const char  * newname) { return syscall(266, (u64)oldname, (u64)newdfd, (u64)newname); }
+__INLINE i64 readlinkat(int dfd, const char  * pathname, char  * buf, int bufsiz) { return syscall(267, (u64)dfd, (u64)pathname, (u64)buf, (u64)bufsiz); }
+__INLINE i64 fchmodat(int dfd, const char  * filename, umode_t mode) { return syscall(268, (u64)dfd, (u64)filename, (u64)mode); }
+__INLINE i64 faccessat(int dfd, const char  * filename, int mode) { return syscall(269, (u64)dfd, (u64)filename, (u64)mode); }
+__INLINE i64 pselect6(int n, unsigned long  * inp, unsigned long  * outp, unsigned long  * exp, struct old_timespec32  * tsp, void  * sig) { return syscall(270, (u64)n, (u64)inp, (u64)outp, (u64)exp, (u64)tsp, (u64)sig); }
+__INLINE i64 ppoll(struct pollfd  * ufds, unsigned int nfds, struct old_timespec32  * tsp, const sigset_t  * sigmask, size_t sigsetsize) { return syscall(271, (u64)ufds, (u64)nfds, (u64)tsp, (u64)sigmask, (u64)sigsetsize); }
+__INLINE i64 unshare(unsigned long unshare_flags) { return syscall(272, (u64)unshare_flags); }
+__INLINE i64 set_robust_list(struct robust_list_head  * head, size_t len) { return syscall(273, (u64)head, (u64)len); }
+__INLINE i64 get_robust_list(int pid, uintptr_t  * head_ptr, size_t  * len_ptr) { return syscall(274, (u64)pid, (u64)head_ptr, (u64)len_ptr); }
+__INLINE i64 splice(int fd_in, loff_t  * off_in, int fd_out, loff_t  * off_out, size_t len, unsigned int flags) { return syscall(275, (u64)fd_in, (u64)off_in, (u64)fd_out, (u64)off_out, (u64)len, (u64)flags); }
+__INLINE i64 tee(int fdin, int fdout, size_t len, unsigned int flags) { return syscall(276, (u64)fdin, (u64)fdout, (u64)len, (u64)flags); }
+__INLINE i64 sync_file_range(int fd, loff_t offset, loff_t nbytes, unsigned int flags) { return syscall(277, (u64)fd, (u64)offset, (u64)nbytes, (u64)flags); }
+__INLINE i64 vmsplice(int fd, const struct iovec  * iov32, unsigned int nr_segs, unsigned int flags) { return syscall(278, (u64)fd, (u64)iov32, (u64)nr_segs, (u64)flags); }
+__INLINE i64 move_pages(pid_t pid, unsigned long nr_pages, uintptr_t  * pages32, const int  * nodes, int  * status, int flags) { return syscall(279, (u64)pid, (u64)nr_pages, (u64)pages32, (u64)nodes, (u64)status, (u64)flags); }
+__INLINE i64 utimensat(unsigned int dfd, const char  * filename, struct old_timespec32  * t, int flags) { return syscall(280, (u64)dfd, (u64)filename, (u64)t, (u64)flags); }
+__INLINE i64 epoll_pwait(int epfd, struct epoll_event  * events, int maxevents, int timeout, const sigset_t  * sigmask, size_t sigsetsize) { return syscall(281, (u64)epfd, (u64)events, (u64)maxevents, (u64)timeout, (u64)sigmask, (u64)sigsetsize); }
+__INLINE i64 signalfd(int ufd, const sigset_t  * user_mask, size_t sigsetsize) { return syscall(282, (u64)ufd, (u64)user_mask, (u64)sigsetsize); }
+__INLINE i64 timerfd_create(int clockid, int flags) { return syscall(283, (u64)clockid, (u64)flags); }
+__INLINE i64 eventfd(unsigned int count) { return syscall(284, (u64)count); }
+__INLINE i64 fallocate(int fd, int mode, loff_t offset, loff_t len) { return syscall(285, (u64)fd, (u64)mode, (u64)offset, (u64)len); }
+__INLINE i64 timerfd_settime(int ufd, int flags, const struct old_itimerspec32  * utmr, struct old_itimerspec32  * otmr) { return syscall(286, (u64)ufd, (u64)flags, (u64)utmr, (u64)otmr); }
+__INLINE i64 timerfd_gettime(int ufd, struct old_itimerspec32  * otmr) { return syscall(287, (u64)ufd, (u64)otmr); }
+__INLINE i64 accept4(int fd, struct sockaddr  * upeer_sockaddr, int  * upeer_addrlen, int flags) { return syscall(288, (u64)fd, (u64)upeer_sockaddr, (u64)upeer_addrlen, (u64)flags); }
+__INLINE i64 signalfd4(int ufd, const sigset_t  * user_mask, size_t sigsetsize, int flags) { return syscall(289, (u64)ufd, (u64)user_mask, (u64)sigsetsize, (u64)flags); }
+__INLINE i64 eventfd2(unsigned int count, int flags) { return syscall(290, (u64)count, (u64)flags); }
+__INLINE i64 epoll_create1(int flags) { return syscall(291, (u64)flags); }
+__INLINE i64 dup3(unsigned int oldfd, unsigned int newfd, int flags) { return syscall(292, (u64)oldfd, (u64)newfd, (u64)flags); }
+__INLINE i64 pipe2(int  * fildes, int flags) { return syscall(293, (u64)fildes, (u64)flags); }
+__INLINE i64 inotify_init1(int flags) { return syscall(294, (u64)flags); }
+__INLINE i64 preadv(unsigned long fd, const struct iovec  * vec, unsigned long vlen, u32 pos_low, u32 pos_high) { return syscall(295, (u64)fd, (u64)vec, (u64)vlen, (u64)pos_low, (u64)pos_high); }
+__INLINE i64 pwritev(unsigned long fd, const struct iovec  * vec, unsigned long vlen, u32 pos_low, u32 pos_high) { return syscall(296, (u64)fd, (u64)vec, (u64)vlen, (u64)pos_low, (u64)pos_high); }
+__INLINE i64 rt_tgsigqueueinfo(pid_t tgid, pid_t pid, int sig, struct siginfo  * uinfo) { return syscall(297, (u64)tgid, (u64)pid, (u64)sig, (u64)uinfo); }
+__INLINE i64 perf_event_open(struct perf_event_attr  * attr_uptr, pid_t pid, int cpu, int group_fd, unsigned long flags) { return syscall(298, (u64)attr_uptr, (u64)pid, (u64)cpu, (u64)group_fd, (u64)flags); }
+__INLINE i64 recvmmsg(int fd, struct mmsghdr  * mmsg, unsigned int vlen, unsigned int flags, struct __kernel_timespec  * timeout) { return syscall(299, (u64)fd, (u64)mmsg, (u64)vlen, (u64)flags, (u64)timeout); }
+__INLINE i64 fanotify_init(unsigned int flags, unsigned int event_f_flags) { return syscall(300, (u64)flags, (u64)event_f_flags); }
+__INLINE i64 fanotify_mark(int fanotify_fd, unsigned int flags, __u32 mask0, __u32 mask1, int dfd, const char  * pathname) { return syscall(301, (u64)fanotify_fd, (u64)flags, (u64)mask0, (u64)mask1, (u64)dfd, (u64)pathname); }
+__INLINE i64 prlimit64(pid_t pid, unsigned int resource, const struct rlimit64  * new_rlim, struct rlimit64  * old_rlim) { return syscall(302, (u64)pid, (u64)resource, (u64)new_rlim, (u64)old_rlim); }
+__INLINE i64 name_to_handle_at(int dfd, const char  * name, struct file_handle  * handle, int  * mnt_id, int flag) { return syscall(303, (u64)dfd, (u64)name, (u64)handle, (u64)mnt_id, (u64)flag); }
+__INLINE i64 open_by_handle_at(int mountdirfd, struct file_handle  * handle, int flags) { return syscall(304, (u64)mountdirfd, (u64)handle, (u64)flags); }
+__INLINE i64 clock_adjtime(clockid_t which_clock, struct timex  * utp) { return syscall(305, (u64)which_clock, (u64)utp); }
+__INLINE i64 syncfs(int fd) { return syscall(306, (u64)fd); }
+__INLINE i64 sendmmsg(int fd, struct mmsghdr  * mmsg, unsigned int vlen, unsigned int flags) { return syscall(307, (u64)fd, (u64)mmsg, (u64)vlen, (u64)flags); }
+__INLINE i64 setns(int fd, int nstype) { return syscall(308, (u64)fd, (u64)nstype); }
+__INLINE i64 getcpu(unsigned  * cpup, unsigned  * nodep, struct getcpu_cache  * unused) { return syscall(309, (u64)cpup, (u64)nodep, (u64)unused); }
+__INLINE i64 process_vm_readv(pid_t pid, const struct iovec  * lvec, unsigned long liovcnt, const struct iovec  * rvec, unsigned long riovcnt, unsigned long flags) { return syscall(310, (u64)pid, (u64)lvec, (u64)liovcnt, (u64)rvec, (u64)riovcnt, (u64)flags); }
+__INLINE i64 process_vm_writev(pid_t pid, const struct iovec  * lvec, unsigned long liovcnt, const struct iovec  * rvec, unsigned long riovcnt, unsigned long flags) { return syscall(311, (u64)pid, (u64)lvec, (u64)liovcnt, (u64)rvec, (u64)riovcnt, (u64)flags); }
+__INLINE i64 kcmp(pid_t pid1, pid_t pid2, int type, unsigned long idx1, unsigned long idx2) { return syscall(312, (u64)pid1, (u64)pid2, (u64)type, (u64)idx1, (u64)idx2); }
+__INLINE i64 finit_module(int fd, const char  * uargs, int flags) { return syscall(313, (u64)fd, (u64)uargs, (u64)flags); }
+__INLINE i64 sched_setattr(pid_t pid, struct sched_attr  * uattr, unsigned int flags) { return syscall(314, (u64)pid, (u64)uattr, (u64)flags); }
+__INLINE i64 sched_getattr(pid_t pid, struct sched_attr  * uattr, unsigned int size, unsigned int flags) { return syscall(315, (u64)pid, (u64)uattr, (u64)size, (u64)flags); }
+__INLINE i64 renameat2(int olddfd, const char  * oldname, int newdfd, const char  * newname, unsigned int flags) { return syscall(316, (u64)olddfd, (u64)oldname, (u64)newdfd, (u64)newname, (u64)flags); }
+__INLINE i64 seccomp(unsigned int op, unsigned int flags, void  * uargs) { return syscall(317, (u64)op, (u64)flags, (u64)uargs); }
+__INLINE i64 getrandom(char  * buf, size_t count, unsigned int flags) { return syscall(318, (u64)buf, (u64)count, (u64)flags); }
+__INLINE i64 memfd_create(const char  * uname, unsigned int flags) { return syscall(319, (u64)uname, (u64)flags); }
+__INLINE i64 kexec_file_load(int kernel_fd, int initrd_fd, unsigned long cmdline_len, const char  * cmdline_ptr, unsigned long flags) { return syscall(320, (u64)kernel_fd, (u64)initrd_fd, (u64)cmdline_len, (u64)cmdline_ptr, (u64)flags); }
+__INLINE i64 bpf(int cmd, union bpf_attr  * uattr, unsigned int size) { return syscall(321, (u64)cmd, (u64)uattr, (u64)size); }
+__INLINE i64 execveat(int fd, const char  * filename, const uintptr_t  * argv, const uintptr_t  * envp, int flags) { return syscall(322, (u64)fd, (u64)filename, (u64)argv, (u64)envp, (u64)flags); }
+__INLINE i64 userfaultfd(int flags) { return syscall(323, (u64)flags); }
+__INLINE i64 membarrier(int cmd, int flags) { return syscall(324, (u64)cmd, (u64)flags); }
+__INLINE i64 mlock2(unsigned long start, size_t len, int flags) { return syscall(325, (u64)start, (u64)len, (u64)flags); }
+__INLINE i64 copy_file_range(int fd_in, loff_t  * off_in, int fd_out, loff_t  * off_out, size_t len, unsigned int flags) { return syscall(326, (u64)fd_in, (u64)off_in, (u64)fd_out, (u64)off_out, (u64)len, (u64)flags); }
+__INLINE i64 preadv2(unsigned long fd, const struct iovec  * vec, unsigned long vlen, u32 pos_low, u32 pos_high, rwf_t flags) { return syscall(327, (u64)fd, (u64)vec, (u64)vlen, (u64)pos_low, (u64)pos_high, (u64)flags); }
+__INLINE i64 pwritev2(unsigned long fd, const struct iovec  * vec, unsigned long vlen, u32 pos_low, u32 pos_high, rwf_t flags) { return syscall(328, (u64)fd, (u64)vec, (u64)vlen, (u64)pos_low, (u64)pos_high, (u64)flags); }
+__INLINE i64 pkey_mprotect(unsigned long start, size_t len, unsigned long prot, int pkey) { return syscall(329, (u64)start, (u64)len, (u64)prot, (u64)pkey); }
+__INLINE i64 pkey_alloc(unsigned long flags, unsigned long init_val) { return syscall(330, (u64)flags, (u64)init_val); }
+__INLINE i64 pkey_free(int pkey) { return syscall(331, (u64)pkey); }
+__INLINE i64 statx(int dfd, const char  * filename, unsigned flags, unsigned int mask, struct statx  * buffer) { return syscall(332, (u64)dfd, (u64)filename, (u64)flags, (u64)mask, (u64)buffer); }
+__INLINE i64 io_pgetevents(aio_context_t ctx_id, long min_nr, long nr, struct io_event  * events, struct old_timespec32  * timeout, const struct __compat_aio_sigset  * usig) { return syscall(333, (u64)ctx_id, (u64)min_nr, (u64)nr, (u64)events, (u64)timeout, (u64)usig); }
+__INLINE i64 rseq(struct rseq  * rseq, u32 rseq_len, int flags, u32 sig) { return syscall(334, (u64)rseq, (u64)rseq_len, (u64)flags, (u64)sig); }
