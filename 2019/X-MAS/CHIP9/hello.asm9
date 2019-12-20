@@ -1,0 +1,17 @@
+rom_start:
+	LDX HL, msg
+	CALL puts
+	HCF
+.l:
+	JMP .l
+
+puts:
+	MOV A, (HL)
+	SOUT
+	ADD A
+	INX HL
+	JMPNZ puts
+	RET
+
+msg:
+	db "Hello World", $0A

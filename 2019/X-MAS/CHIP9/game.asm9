@@ -1,0 +1,1235 @@
+org $8000
+bss_begin:
+
+objects:
+player:
+	rb tObj_sizeof
+objects.end:
+
+cam_tile:
+	rb 2
+cam_fine:
+	rb 2
+counter:
+	rb 1
+death_counter:
+	rb 1
+
+bss_end:
+
+; what the bootloader does:
+;  memcpy $0325, $0597, $2DDB
+
+; reloader
+org $0325
+stage1:
+	LDX DE, stage2
+	LDX BC, $8000
+_:
+	MOV HL, DE
+	MOV A, (HL)
+	MOV HL, BC
+	MOV (HL), A
+	INX BC
+	INX DE
+	LDI A, stage2_end lo
+	CMP E
+	JMPNZ _
+	LDI A, stage2_end hi
+	CMP D
+	JMPNZ _
+	JMP $8000
+
+stage2:
+	LDX BC, $0000
+	LDX DE, real_rom
+_:
+	MOV HL, DE
+	MOV A, (HL)
+	MOV HL, BC
+	MOV (HL), A
+	INX BC
+	INX DE
+	LDI A, $2F
+	CMP D
+	JMPNZ _
+
+	LDX BC, $2DDB - real_rom + stage1
+	LDX DE, $597 + $2DDB
+_:
+	MOV HL, DE
+	MOV A, (HL)
+	MOV HL, BC
+	MOV (HL), A
+	INX BC
+	INX DE
+	LDI A, $50
+	CMP D
+	JMPNZ _
+	JMP $0000
+stage2_end:
+
+real_rom:
+org $0000
+
+tObj_tile   = $00
+tObj_fine   = $02
+tObj_vel    = $04
+tObj_size   = $06
+tObj_status = $08
+tObj_dir    = $09
+tObj_flags  = $10
+tObj_sizeof = $11
+
+kObj_GROUNDED = %00000010
+kObj_KILLED   = %00000100
+kObj_GODOWN   = %00001000
+
+kTile_COLLY = %00000010
+kTile_COLLX = %00000001
+
+kTile_COLL = %00000011
+kTile_PLAT = %00010000
+kTile_KILL = %00000100
+kTile_SICE = %00001000
+
+dPAD = $F000
+kPAD_U      = %10000000
+kPAD_L      = %01000000
+kPAD_D      = %00100000
+kPAD_R      = %00010000
+kPAD_A      = %00001000
+kPAD_B      = %00000100
+kPAD_SELECT = %00000010
+kPAD_START  = %00000001
+
+
+_boot:
+	; setup stack
+	LDX SP, $FFFE
+
+	; zero out bss
+	XOR A
+	MOV B, A
+	LDX HL, bss_begin
+_:
+	MOV (HL), B
+	INX HL
+	LDI A, bss_end hi
+	CMP H
+	JMPNZ _
+	LDI A, bss_end lo
+	CMP L
+	JMPNZ _
+
+	;JMP game_init
+
+splash:
+	LDI A, 20
+_:
+	;CLRSCR
+	CALL clrscr_emu
+	DEC A
+	JMPNZ _
+
+	LDI A, 24
+_:
+	PUSH A
+	LDX HL, splash_pb
+	LDX BC, $0000
+	LDX DE, $4080
+	CALL blit
+	;CLRSCR
+	CALL clrscr_emu
+	POP A
+	DEC A
+	JMPNZ _
+
+	LDX HL, splash_pb
+.scroll_down:
+	LDI A, 16
+	ADD L
+	JMPNZ _f1
+	INC H
+	LDI A, splash_pb + $140 hi
+	CMP H
+	JMPZ _f2
+_:
+	PUSH HL
+	LDX BC, $0000
+	LDX DE, $4080
+	CALL blit
+	;CLRSCR
+	CALL clrscr_emu
+	POP HL
+	JMP .scroll_down
+
+_:
+	LDI A, 18
+_:
+	PUSH A
+	LDX HL, splash_pb+$100
+	LDX BC, $0000
+	LDX DE, $4080
+	CALL blit
+	;CLRSCR
+	CALL clrscr_emu
+	POP A
+	DEC A
+	JMPNZ _
+
+	; scroll right
+	LDI A, 128
+_:
+	PUSH A
+	LDX HL, splash_pb+$100
+	LDX BC, $0080
+	ADD C
+	LDX DE, $4000
+	ADD E
+	CALL blit
+
+	POP A
+	PUSH A
+
+	LDX HL, splash_braindead
+	LDX BC, $0000
+	ADD C
+	LDX DE, $4080
+	ADD E
+	CALL blit
+
+	;CLRSCR
+	CALL clrscr_emu
+	LDI H, ror_lut hi
+	POP A
+	MOV C, A
+	ADDI 7
+	MOV L, A
+	LDI A, $7F
+	MOV L, (HL)
+	AND L
+	MOV L, (HL)
+	AND L
+	MOV L, (HL)
+	AND L
+	MOV A, L
+	SUB C
+	MOV A, C
+	JMPNZ _
+
+_:
+	LDI A, 24
+_:
+	PUSH A
+	LDX HL, splash_braindead
+	LDX BC, $0000
+	LDX DE, $4080
+	CALL blit
+	;CLRSCR
+	CALL clrscr_emu
+	POP A
+	DEC A
+	JMPNZ _
+
+	LDI A, 0
+.wait_start:
+	PUSH A
+	LDX HL, splash_game
+	LDX BC, $0000
+	LDX DE, $4080
+	CALL blit
+	POP A
+	INC A
+	PUSH A
+	ANDI 16
+	JMPZ _f1
+	LDX HL, press_start
+	LDX BC, $0030
+	LDX DE, $0C78
+	CALL blit
+_:
+	;CLRSCR
+	CALL clrscr_emu
+	LDX HL, dPAD
+	MOV A, (HL)
+	ANDI kPAD_START
+	JMPNZ _f1
+	POP A
+	JMP .wait_start
+_:
+	POP A
+	LDX HL, counter
+	LDI (HL), 24
+
+
+game_init:
+	LDX HL, counter
+	MOV A, (HL)
+	AND A
+	JMPZ _f1
+	DEC A
+	MOV (HL), A
+_:
+	LDX HL, dPAD
+	MOV A, (HL)
+	ANDI kPAD_SELECT
+	JMPZ _f1
+	LDX HL, counter
+	LDI A, $ff
+	AND (HL)
+	JMPNZ _f1
+	LDI (HL), 8
+	CALL swap_char
+_:
+	LDX HL, dPAD
+	MOV A, (HL)
+	ANDI kPAD_START
+	JMPZ _f1
+	LDX HL, counter
+	LDI A, $ff
+	AND (HL)
+	JMPNZ _f1
+	JMP start_level
+_:
+	LDX HL, select_char
+	LDX BC, $0000
+	LDX DE, $1040
+	CALL blit
+
+	LDX HL, tooru.splash
+	LDX BC, $0040
+	LDX DE, $4080
+	CALL blit
+	LDX HL, tooru.sel
+	LDX BC, $1000
+	LDX DE, $3040
+	CALL blit
+	LDX HL, tooru.walk
+	LDX BC, $3000
+	LDX DE, $4010
+	CALL blit
+	LDX HL, tooru.crouch
+	LDX BC, $3010
+	LDX DE, $4020
+	CALL blit
+	LDX HL, tooru.walk
+	LDX BC, $3020
+	LDX DE, $4030
+	CALL blit
+	LDX HL, tooru.crouch
+	LDX BC, $3030
+	LDX DE, $4040
+	CALL blit
+	;CLRSCR
+	CALL clrscr_emu
+	JMP game_init
+
+
+start_level:
+	;CALL swap_char
+
+	LDX HL, cam_tile
+	LDI (HL), $35
+	INX HL
+	LDI (HL), $01
+
+	LDX HL, player+tObj_tile
+	LDI (HL), $3B
+	INX HL
+	LDI (HL), $0A
+
+game_loop:
+	LDX HL, counter
+	INC (HL)
+	MOV A, (HL)
+	ANDI %00000011
+	JMPNZ .redraw
+
+	; infrequent updates
+	;LDX HL, cam_fine+0
+	;INC (HL)
+	;MOV A, (HL)
+	;;ANDI $08
+	;JMPZ _f1
+	;LDI (HL), 0
+	;LDX HL, cam_tile+0
+	;INC (HL)
+_:
+
+.redraw:
+	LDX HL, player + tObj_flags
+	LDI (HL), 0
+
+	LDX HL, player+tObj_vel
+	MOV B, (HL) ; y
+	INX HL
+	MOV C, (HL) ; x
+	LDI C, 0
+
+	LDX HL, player+tObj_status
+	MOV A, (HL)
+	ANDI kObj_GROUNDED
+	JMPZ .in_air
+
+	LDX HL, dPAD
+	MOV A, (HL)
+	ANDI kPAD_U
+	JMPZ _f1
+	; on UP
+	LDI B, -10
+_:
+
+
+.in_air:
+	LDX HL, dPAD
+	MOV A, (HL)
+	ANDI kPAD_D
+	JMPZ _f1
+	; on DOWN
+	PUSH HL
+	LDX HL, player + tObj_flags
+	LDI A, kObj_GODOWN
+	OR (HL)
+	POP HL
+_:
+	MOV A, (HL)
+	ANDI kPAD_L
+	JMPZ _f1
+	; on LEFT
+	LDI C, $ff
+_:
+	MOV A, (HL)
+	ANDI kPAD_R
+	JMPZ _f1
+	; on RIGHT
+	LDI C, 1
+_:
+	; save velocity
+	LDX HL, player+tObj_vel
+	MOV (HL), B
+	INX HL
+	MOV (HL), C ; x
+
+	LDX HL, objects
+.move_objs:
+	PUSH HL
+	CALL move_obj
+	POP HL
+	LDI A, tObj_sizeof
+	ADD L
+	JMPNC _f1
+	INC H
+_:
+	LDI A, objects.end hi
+	CMP H
+	JMPNZ .move_objs
+	LDI A, objects.end lo
+	CMP L
+	JMPNZ .move_objs
+
+	LDX HL, death_counter
+	MOV A, (HL)
+	ADD A
+	JMPZ _f1
+	INC (HL)
+	;TRAP
+	JMPH game_over
+_:
+
+	LDX HL, player+tObj_status
+	MOV A, (HL)
+	ANDI  kObj_KILLED
+	JMPZ _f1
+	LDX HL, death_counter
+	MOV A, (HL)
+	AND A
+	JMPNZ _f1
+	LDI (HL), 10
+_:
+
+.adj:
+	; adjust camera
+	LDX HL,  cam_tile
+	MOV E, (HL)
+	LDX HL,  player + tObj_tile
+	MOV A, (HL)
+	SUBI 4
+	SUB E
+	LDI H, camera_adj_lut hi
+	MOV L, E
+	MOV E, (HL)
+	MOV A, E
+	CMPI A, $55
+	JMPZ .reset_cam
+	LDX HL, cam_fine
+	CALL add_tf
+
+	; adjust camera
+	LDX HL,  cam_tile + 1
+	MOV E, (HL)
+	LDX HL,  player + tObj_tile + 1
+	MOV A, (HL)
+	SUBI 7
+	SUB E
+	LDI H, camera_adj_lut hi
+	MOV L, E
+	MOV E, (HL)
+	MOV A, E
+	CMPI A, $55
+	JMPZ .reset_cam
+	LDX HL, cam_fine+1
+	CALL add_tf
+
+	JMP _f1
+.reset_cam:
+	LDX HL,  player + tObj_tile
+	MOV A, (HL)
+	SUBI 4
+	LDX HL,  cam_tile
+	MOV (HL), A
+	LDX HL,  player + tObj_tile + 1
+	MOV A, (HL)
+	SUBI 7
+	LDX HL,  cam_tile + 1
+	MOV (HL), A
+_:
+
+	; draw player
+	LDX HL, player + tObj_tile
+	MOV B, (HL)
+	LDX HL, cam_tile
+	MOV A, (HL)
+	SUB B
+
+	LDX HL, player + tObj_tile+1
+	MOV C, (HL)
+	LDX HL, cam_tile+1
+	MOV A, (HL)
+	SUB C
+
+	MOV A, B
+	ADD A
+	ADD A
+	ADD A
+	MOV B, A
+	LDX HL, cam_fine
+	MOV A, (HL)
+	SUB B
+	LDX HL, player + tObj_fine
+	MOV A, (HL)
+	ADD B
+
+	MOV A, C
+	ADD A
+	ADD A
+	ADD A
+	MOV C, A
+	LDX HL, cam_fine+1
+	MOV A, (HL)
+	SUB C
+	LDX HL, player + tObj_fine+1
+	MOV A, (HL)
+	ADD C
+
+	LDI A, 15
+	SUB B
+	LDI A, 2
+	SUB C
+
+	LDX HL, player + tObj_dir
+	MOV A, (HL)
+	;TRAP
+	AND A
+	LDX HL, tooru.walk
+	JMPNN .no_rev
+	LDI A, 32
+	ADD L
+	LDI A, 6
+	ADD C
+.no_rev:
+	LDX DE, $1010
+	MOV A, B
+	ADD D
+	MOV A, C
+	ADD E
+
+	CALL blit
+	CALL draw_map
+	;CLRSCR
+	CALL clrscr_emu
+
+	JMP game_loop
+
+move_obj:
+	PUSH HL
+
+	PUSH HL
+	LDI A, tObj_status
+	ADD L
+	LDI (HL), 0 ; clear status bits
+
+	LDI A, tObj_vel+1 - tObj_status
+	ADD L
+	MOV A, (HL)
+	AND A
+	JMPZ .keep_dir
+	MOV E, A
+	LDI A, 4 ;tObj_dir - tObj_vel
+	ADD L
+	MOV (HL), E
+.keep_dir:
+	POP HL
+
+	PUSH HL
+	LDX HL, counter
+	MOV A, (HL)
+	POP HL
+	;ANDI 1
+	;JMPNZ .skip_gravity
+
+	LDI A, tObj_vel
+	ADD L
+	MOV A, (HL)
+	LDI E, 16
+	CMPS E
+	JMPN .skip_gravity
+	INC A
+	MOV (HL), A
+.skip_gravity:
+	POP HL
+
+.retry_move:
+	; save position
+	MOV A, (HL)
+	PUSH A
+	INX HL
+	MOV A, (HL)
+	PUSH A
+	INX HL
+	MOV A, (HL)
+	PUSH A
+	INX HL
+	MOV A, (HL)
+	PUSH A
+	;TRAP
+	DEC L
+	DEC L
+	DEC L
+
+	CALL move_tfv
+	INC L ; x coord
+	CALL move_tfv
+	DEC L
+
+	PUSH HL
+	MOV B, (HL) ; tile.y
+	INX HL
+	MOV C, (HL) ; tile.x
+	CALL query_map
+	MOV E, A
+	POP HL
+
+	PUSH HL
+	ANDI kTile_PLAT
+	JMPZ _f1
+	LDI A, tObj_flags
+	ADD L
+	MOV A, (HL)
+	ANDI kObj_GODOWN
+	JMPNZ .ignore
+	LDI A, tObj_vel - tObj_flags
+	ADD L
+	MOV A, (HL)
+	AND A
+	JMPNN _f1
+.ignore:
+	; ignore collisions with platforms when moving up
+	LDI A, %11111100
+	AND E
+_:
+	POP HL
+
+	;PUSH HL
+	;INX HL
+	;INX HL
+	;TRAP
+	;CALL orient ; coll bits now in E
+	;TRAP
+	;POP HL
+
+	PUSH HL
+	LDI A, tObj_status
+	ADD L
+	MOV A, E
+	OR (HL) ; set obj status bits
+	POP HL
+
+	ANDI kTile_COLL
+	JMPZ .no_coll
+
+	; restore saved pos
+	LDI A, tObj_vel+255
+	ADD L
+	POP (HL)
+	DEC L
+	POP (HL)
+	DEC L
+	POP (HL)
+	DEC L
+	POP (HL)
+
+	PUSH HL
+
+	LDI A, tObj_vel
+	ADD L
+
+	PUSH HL
+	MOV E, (HL)
+	INX HL
+	MOV A, (HL)
+	OR E
+	JMPNZ _f1
+	POP HL
+	POP HL
+	RET ; give up on stuck object
+_:
+	POP HL
+
+	;MOV A, E
+	;ANDI kTile_COLLY
+	;JMPZ _f1
+	; decrease Y vel
+	MOV A, (HL)
+	AND A
+	JMPZ .decrease_x
+	PUSH HL
+	LDX HL, decrease_vel
+	ADD L
+	MOV A, (HL)
+	XOR A
+	POP HL
+	MOV (HL), A
+	JMP .go_retry
+;_:
+
+.decrease_x:
+	INX HL ; &vel.x
+	;MOV A, E
+	;ANDI kTile_COLLX
+	;JMPZ _f1
+	; decrease X vel
+	MOV A, (HL)
+	PUSH HL
+	LDX HL, decrease_vel
+	ADD L
+	MOV A, (HL)
+	XOR A
+	POP HL
+	MOV (HL), A
+;_:
+
+.go_retry:
+	POP HL
+	;RET
+	JMP .retry_move
+
+.no_coll:
+	; discard saved position
+	POP A
+	POP A
+	POP A
+	POP A
+.ret:
+	RET
+
+query_map: ; BC=tile_coord
+	LDI H, ror_lut hi
+	MOV L, B
+	MOV B, (HL)
+	LDI A, $80 ; "carry" into low
+	AND B ; (cam.y&1)<<7
+	MOV A, (HL)
+	ANDI $7F ; cam.y/2
+	LDX HL, map
+	ADD H
+	MOV A, B
+	ADD L
+	JMPNZ _f1
+	INC H
+_:
+	MOV A, C ; tile.y
+	ADD L
+	MOV A, (HL) ; tile id
+	LDX HL, tile_attrs
+	ADD L ; no carry needed
+	MOV A, (HL)
+	RET
+
+add_tf: ; HL=&fine E=delta
+	MOV A, E
+	ADD (HL)
+	MOV A, (HL)
+	ANDI 8
+	JMPZ _f1
+	LDI A, 7
+	AND (HL)
+	MOV A, E
+	AND A
+	LDI E, $ff
+	JMPN .neg
+	LDI E, 1
+.neg:
+	LDI A, 2
+	SUB L
+	MOV A, E
+	ADD (HL)
+_:
+	RET
+
+move_tfv:
+	PUSH HL
+
+	LDI A, tObj_vel
+	ADD L
+	MOV A, (HL)
+
+	; clamp movement to 2 pixels
+	LDI E, 3
+	CMPS E
+	JMPNN _f1
+	LDI A, 2
+_:
+	LDI E, -2
+	CMPS E
+	JMPN _f1
+	LDI A, -2
+_:
+	MOV E, A
+
+	LDI A, tObj_fine - tObj_vel
+	ADD L
+	MOV A, E
+	ADD (HL)
+	MOV A, (HL)
+	;TRAP
+	ANDI 8
+	JMPZ _f1
+
+	LDI A, 7
+	AND (HL)
+	MOV A, E
+	AND A
+	LDI D, $ff
+	;TRAP
+	JMPN .neg
+	LDI D, 1
+.neg:
+	LDI A, tObj_tile - tObj_fine
+	ADD L
+	MOV A, D
+	ADD (HL)
+	MOV A, (HL)
+	;TRAP
+_:
+	POP HL
+	RET
+
+game_over:
+	LDX HL, game_over_image
+	LDX BC, $0000
+	LDX DE, $4080
+	CALL blit
+	;CLRSCR
+	CALL clrscr_emu
+	JMP game_over
+
+blit:
+	PUSH C
+.y_loop:
+.x_loop:
+	MOV A, (HL)
+	INX HL
+	;DRAW
+	CALL draw_emu
+	LDI A, 8
+	ADD C
+	MOV A, C
+	CMP E
+	JMPNZ .x_loop
+	POP C
+	PUSH C
+	INC B
+	MOV A, B
+	CMP D
+	JMPNZ .y_loop
+	POP C
+	RET
+
+draw_map:
+	LDX HL, cam_tile
+	MOV A, (HL) ; A = camera.y/8
+	INX HL
+	MOV E, (HL) ; E = camera.x/8
+	DEC E
+
+	; calculate map+cam.y*128+cam.x
+	LDI H, ror_lut hi
+	MOV L, A
+	MOV B, (HL)
+	LDI A, $80 ; "carry" into low
+	AND B
+	MOV A, (HL)
+	ANDI $7F ; cam.y/2
+	LDX HL, map
+	ADD H
+	MOV A, B
+	ADD L
+	JMPNZ _f1
+	INC H
+_:
+	MOV A, E ; row offset
+	ADD L
+	; no carry since the map is 128 byte aligned
+
+	PUSH HL ; save map ptr for loop over cols
+
+	; load fine x position; used by outer loop
+	LDX HL, cam_fine+1
+	MOV A, (HL)
+	LDI C, 0
+	SUB C
+
+	LDI D, 0 ; columns to draw
+.the_loop:
+	POP HL
+	PUSH HL
+	MOV A, D
+	ADD L ; no carry since map is aligned
+
+	PUSH D ; spill
+	PUSH HL ; map reading pointer, used by inner loops
+
+	LDX HL, cam_fine
+	MOV A, (HL)
+	LDI B, 0
+	SUB B
+
+	LDI D, 9 ; cols to do
+.col_loop:
+	POP HL
+	;TRAP
+
+	MOV E, (HL) ; cur_tile
+	LDI A, 128 ; go to next row
+	ADD L
+	JMPNC _f1
+	INC H
+_:
+	PUSH HL
+
+	; E is the tile index
+	LDI H, div32_lut hi
+	MOV L, E
+	MOV H, (HL)
+	LDI A, tiles hi
+	ADD H
+	MOV A, E
+	ADD A
+	ADD A
+	ADD A
+	MOV L, A
+	; HL is now tiles + 8*cur_tile
+
+	LDI E, 8
+.tile_loop:
+	MOV A, (HL)
+	;TRAP
+	;DRAW
+	CALL draw_emu
+	INX HL
+	INC B
+	DEC E
+	JMPNZ .tile_loop
+	DEC D
+	JMPNZ .col_loop
+	LDI A, 8
+	ADD C ; next column
+
+	POP HL
+	POP D
+	INC D
+	LDI A, 17
+	;TRAP
+	CMP D
+	JMPNZ .the_loop
+
+	POP HL ; cleanup
+
+	RET
+
+; row stride is 32 bytes
+dFB = $A008
+
+draw_emu:
+	;TRAP
+	PUSH HL
+	PUSH DE
+	PUSH A
+	PUSH C ; save fine x pos
+
+	LDI H, idiv8_lut hi
+	MOV L, C
+	MOV C, (HL)
+
+	LDX DE, dFB+1
+	MOV A, C
+	ADD E ; no carry
+	LDI H, ror_lut hi
+	MOV L, B
+	MOV L, (HL)
+	MOV L, (HL)
+	MOV L, (HL)
+	MOV A, L
+	ANDI %00011111
+	ADD D ; no carry
+	MOV A, L
+	ANDI %11100000
+	ADD E
+	JMPNZ _f1
+	INC D
+_:
+	; DE is the addr of pixel pair+1
+	POP C ; fine x pos
+	MOV L, C
+	LDI A, 7
+	AND L
+	POP A ; bits
+	PUSH A
+	PUSH BC
+
+	PUSH L
+
+	MOV B, L
+	LDI H, ror_lut hi
+	MOV L, A
+	LDI A, $ff
+	AND B
+	JMPZ .no_rot
+_:
+	MOV L, (HL)
+	DEC B
+	JMPNZ _
+.no_rot:
+
+	MOV H, L
+	POP A
+	LDI L, 8
+	SUB L
+	LDI A, $ff
+_:
+	ADD A
+	DEC L
+	JMPNZ _
+	MOV L, H
+
+	; A = mask of overflow pixels
+	; L = rotated pixels
+	MOV B, A
+	MOV C, L
+	AND L
+	MOV A, L
+	MOV HL, DE
+	;TRAP
+	OR (HL)
+	LDI A, $ff
+	XOR B
+	MOV A, B
+	AND C
+	MOV A, C
+	DEC L
+	;INC L ; no carry
+	;INX HL
+	;TRAP
+	OR (HL)
+
+	POP BC
+	POP A
+	POP DE
+	POP HL
+
+	;DRAW
+	RET
+
+clrscr_emu:
+	PUSH BC
+	PUSH DE
+	PUSH HL
+	PUSH A
+
+	LDX BC, $0000
+	LDX HL, dFB
+	LDX DE, $4010
+_:
+	MOV A, (HL)
+	LDI (HL), 0
+	;TRAP
+	DRAW
+	INX HL
+	LDI A, 8
+	ADD C
+	DEC E
+	JMPNZ _
+	LDI E, 16
+	LDI C, 0
+	INC B
+	LDI A, 16 ; skip intra-row padding
+	ADD L
+	JMPNC .nc
+	INC H
+.nc:
+	DEC D
+	JMPNZ _
+	CLRSCR
+	POP A
+	POP HL
+	POP DE
+	POP BC
+	RET
+
+swap_char:
+	PUSH BC
+	PUSH E
+
+	LDX HL, tooru
+	LDX BC, kanna
+_:
+	MOV A, (HL)
+	PUSH HL
+	MOV HL, BC
+	MOV E, (HL)
+	MOV (HL), A
+	POP HL
+	MOV (HL), E
+	INX BC
+	INX HL
+	LDI A, tooru.end hi
+	CMP H
+	JMPNZ _
+	LDI A, tooru.end lo
+	CMP L
+	JMPNZ _
+
+	POP E
+	POP BC
+	RET
+
+puts:
+	MOV A, (HL)
+	SOUT
+	ADD A
+	INX HL
+	JMPNZ puts
+	RET
+
+align 4
+	db $ff
+	db 0
+decrease_vel:
+	db 0
+	db 1
+
+align 256
+camera_adj_lut:
+	incbin "camera_lut.bin"
+idiv8_lut:
+	makelut "((i>>3)+((-(i>>7&1))<<5))&0xff", 256
+div32_lut:
+	makelut "i//32", 256
+ror_lut:
+	makelut "(i>>1)+((i<<7)&0xff)", 256
+
+align 256
+tiles:
+	incimg "tiles.png", "IT"
+
+align 64
+tooru:
+.walk:
+	incimg "tooru_sprite.GIF", "I"
+.walk_r:
+	incimg "tooru_sprite.GIF", "IR"
+.crouch:
+	incimg "tooru_crouch.GIF", "I"
+.crouch_r:
+	incimg "tooru_crouch.GIF", "IR"
+.sel:
+	incimg "tooru_sel.png", "I"
+.splash:
+	incimg "tooru.gif"
+.end:
+
+align 64
+kanna:
+.splash:
+	incimg "kanna_sprite.GIF", "I"
+	incimg "kanna_sprite.GIF", "IR"
+	incimg "kanna_crouch.GIF", "I"
+	incimg "kanna_crouch.GIF", "IR"
+	incimg "kanna_sel.png", "I"
+	incimg "tooru.gif" ; TODO: kanna splash
+
+
+align 16
+splash_pb:
+	incimg "pb.png"
+press_start:
+	incimg "press_start.png", "I"
+splash_braindead:
+	incimg "braindead.png"
+splash_game:
+	incimg "game.png", "I"
+game_over_image:
+	incimg "game_over.png"
+
+align 128
+map:
+	incbin "map.bin"
+
+align 64
+select_char:
+	incimg "select.png"
+
+align 64
+tile_attrs:
+.air:
+	db 0
+.weak_wall:
+	db 0
+.platform:
+	db kTile_PLAT+kTile_COLL
+.spawn:
+	db 0
+.spike:
+	db kTile_KILL
+.deet:
+	db kTile_SICE
+.various_walls:
+	db kTile_COLL
+	db kTile_COLL
+	db kTile_COLL
+	db kTile_COLL
+	db kTile_COLL
+	db kTile_COLL
+	db kTile_COLL
+	db kTile_COLL
+	db kTile_COLL
+	db kTile_COLL
+	db kTile_COLL
+	db kTile_COLL
+	db kTile_COLL
+	db kTile_COLL
+	db kTile_COLL
+	db kTile_COLL
+.text_glyphs:
+	zb tile_attrs+64 - .text_glyphs
