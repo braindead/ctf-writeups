@@ -1,0 +1,16 @@
+read_verilog out/pre_map.v
+synth -top Cipher
+flatten
+opt
+aigmap
+opt
+clean
+
+abc -liberty cells.lib -script synth.abc
+clean
+opt
+clean
+
+write_blif out/synth.blif
+write_verilog out/synth.v
+write_json out/synth.json

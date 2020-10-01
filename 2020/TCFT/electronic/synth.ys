@@ -1,0 +1,31 @@
+read_verilog cipher.v
+
+synth -top Cipher
+
+select -module SBox
+aigmap
+opt
+abc
+opt
+aigmap
+freduce
+abc
+opt
+clean
+
+select -module Cipher
+flatten
+clean
+aigmap
+clean
+opt
+clean
+
+abc -liberty cells.lib -script synth.abc
+clean
+opt
+clean
+
+write_blif out/synth.blif
+write_verilog out/synth.v
+write_json out/synth.json
